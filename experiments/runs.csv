@@ -1,0 +1,1 @@
+timestamp,run_id,git_commit,seed,model,dataset,hardware,wall_time,f1,eer_orig,eer_sp,eer_env,notes

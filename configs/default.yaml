@@ -1,0 +1,71 @@
+# ============================================================
+# CompSpoof-TL — single source of truth for all parameters.
+# Every experiment commits its config before launch.
+# ============================================================
+
+project:
+  name: compspoof-tl
+  seeds: [13, 42, 2027]          # the ONLY seeds allowed for headline numbers
+
+paths:
+  data_root: data
+  compspoofv2_dir: data/CompSpoofV2   # set on the server after download
+  benchmark_dir: data/CompSpoof-TL    # generated benchmark (manifests)
+  outputs: outputs
+  experiment_log: experiments/runs.csv
+
+audio:
+  sample_rate: 16000             # everything is 16 kHz mono
+  mono: true
+  clip_seconds: 4                # 4-second mixtures
+  frame_ms: 20                   # base label resolution (matches 50 Hz encoder frames)
+  eval_resolutions_ms: [20, 40, 160, 640]   # coarser = max-pool the finest
+
+# --- benchmark construction (Step 6 / 8) ---
+benchmark:
+  target_clips: 55000            # aim 50k-60k total
+  regions_per_component: [1, 3]  # 1 to 3 manipulated regions per manipulated component
+  region_seconds: [0.4, 2.0]     # each region 0.4 - 2.0 s
+  region_quantize_ms: 20         # boundaries snap to the 20 ms grid
+  crossfade_ms: [10, 50]         # raised-cosine crossfade length, sampled uniformly
+  loudness_match_lu: 1.0         # match spliced sources to within 1 LU
+  snr_db: [null, null]           # FILL after Step 4 metadata audit (CompSpoofV2 range)
+  anti_shortcut:
+    matched_bonafide_splices: true   # C1
+    include_full_real_and_full_fake: true  # C2
+    verify_distributions: true       # C3 (two-sample tests)
+    run_shortcut_probe: true         # C4 (must be near chance)
+
+# --- encoders (frozen feature extractors) ---
+encoders:
+  speech:
+    name: xlsr                   # XLS-R 300M, features at 50 Hz
+    hidden_dim: 1024
+    frozen: true
+  environment:
+    name: beats                  # BEATs iter3
+    hidden_dim: 768
+    frozen: true
+
+# --- dual-branch model head (Step 11) ---
+model:
+  gru_hidden: 256
+  gru_layers: 2
+  bidirectional: true
+  cross_attention_heads: 4
+  trainable_param_budget_millions: 10   # keep the head < 10M params
+
+# --- training ---
+train:
+  batch_size: 16
+  precision: fp16                # half precision + frozen encoders to fit 24 GB
+  optimizer: adam
+  lr: 1.0e-3
+  epochs: 30
+  pos_weight: null               # class balancing for rare fake frames (set from data)
+
+# --- evaluation ---
+eval:
+  metrics: [macro_f1, frame_eer, frame_f1, range_eer, event_f1, clip_correct]
+  headline_metric: range_eer     # per component
+  n_seeds_headline: 3

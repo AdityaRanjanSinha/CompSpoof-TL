@@ -1,0 +1,32 @@
+# data & large artifacts (regenerable / huge — never commit)
+data/*
+!data/.gitkeep
+outputs/
+checkpoints/
+*.wav
+*.flac
+*.pt
+*.ckpt
+*.tar.gz
+*.tar.gz.part_*
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.venv/
+env/
+
+# hugging face cache
+.cache/
+hf_cache/
+
+# lockfile is committed, but the resolved env dir is not
+conda-meta/
+
+# os / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
