@@ -9,8 +9,8 @@ project:
 
 paths:
   data_root: data
-  compspoofv2_dir: data/CompSpoofV2   # set on the server after download
-  benchmark_dir: data/CompSpoof-TL    # generated benchmark (manifests)
+  compspoofv2_dir: /home/ee/btech/ee1230446/scratch/CompSpoofV2   # set on the server after download
+  benchmark_dir: /home/ee/btech/ee1230446/scratch/CompSpoof-TL    # generated benchmark (manifests)
   outputs: outputs
   experiment_log: experiments/runs.csv
 
@@ -29,7 +29,7 @@ benchmark:
   region_quantize_ms: 20         # boundaries snap to the 20 ms grid
   crossfade_ms: [10, 50]         # raised-cosine crossfade length, sampled uniformly
   loudness_match_lu: 1.0         # match spliced sources to within 1 LU
-  snr_db: [null, null]           # FILL after Step 4 metadata audit (CompSpoofV2 range)
+  snr_db: [7, 12]           # FILL after Step 4 metadata audit (CompSpoofV2 range)
   anti_shortcut:
     matched_bonafide_splices: true   # C1
     include_full_real_and_full_fake: true  # C2
