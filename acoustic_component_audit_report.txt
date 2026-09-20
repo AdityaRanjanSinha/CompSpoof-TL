@@ -1,0 +1,39 @@
+============================================================
+ACOUSTIC-ONLY COMPONENT SHORTCUT AUDIT  (mixed clips only)
+Filename features excluded (model never sees them).
+============================================================
+------------------------------------------------------------
+TEST A — 4 mixed classes (chance 0.25)
+  n=3200   classes=['bonafide_bonafide', 'bonafide_spoof', 'spoof_bonafide', 'spoof_spoof']
+  chance (even)        : 0.250
+  majority baseline    : 0.250
+  Random Forest (5-CV) : 0.491
+  LogReg (5-CV)        : 0.341
+  --> best 0.491  (margin over chance +0.241)
+  VERDICT: LEAK — acoustic features predict this well above chance. Construction must control for it (loudness/energy equalization).
+------------------------------------------------------------
+TEST B — SPEECH: spoof vs bonafide (chance 0.50)
+  n=3200   classes=['bonafide', 'spoof']
+  chance (even)        : 0.500
+  majority baseline    : 0.500
+  Random Forest (5-CV) : 0.661
+  LogReg (5-CV)        : 0.619
+  --> best 0.661  (margin over chance +0.161)
+  VERDICT: LEAK — acoustic features predict this well above chance. Construction must control for it (loudness/energy equalization).
+------------------------------------------------------------
+TEST C — ENVIRONMENT: spoof vs bonafide (chance 0.50)
+  n=3200   classes=['bonafide', 'spoof']
+  chance (even)        : 0.500
+  majority baseline    : 0.500
+  Random Forest (5-CV) : 0.725
+  LogReg (5-CV)        : 0.528
+  --> best 0.725  (margin over chance +0.225)
+  VERDICT: LEAK — acoustic features predict this well above chance. Construction must control for it (loudness/energy equalization).
+============================================================
+READING THE RESULT:
+ - If TEST A ~0.25 and B,C ~0.50 -> source data has NO acoustic component-level
+   shortcut; the earlier 55% was indeed just original-vs-mixed. Safe.
+ - If any is well above chance -> a REAL acoustic shortcut exists for that
+   component; CompSpoof-TL construction must equalize it (control C3), and the
+   later C4 probe on the constructed benchmark must confirm it's removed.
+============================================================
