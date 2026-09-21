@@ -1,0 +1,29 @@
+============================================================
+ENV LEAK DIAGNOSIS — which feature group carries the shortcut?
+(env spoof vs bonafide; chance = 0.500)
+============================================================
+  level (rms/peak): 0.515  (chance 0.500, margin +0.015)
+  spectral shape  : 0.574  (chance 0.500, margin +0.074)
+  MFCC (detail)   : 0.660  (chance 0.500, margin +0.160)
+  ALL             : 0.651  (chance 0.500, margin +0.151)
+
+Top 12 leaking features:
+mfcc4_mean     0.038337
+mfcc13_mean    0.037724
+mfcc6_std      0.035440
+mfcc5_mean     0.035105
+mfcc11_mean    0.034980
+mfcc9_mean     0.033217
+mfcc1_std      0.033043
+mfcc6_mean     0.032814
+mfcc2_std      0.032668
+mfcc3_mean     0.032214
+flatness       0.032056
+mfcc11_std     0.030989
+
+READING:
+ - If LEVEL leaks -> C3 loudness matching is not tight enough.
+ - If SPECTRAL leaks -> need spectral-envelope matching (equalize band ratios).
+ - If MFCC leaks most -> fine spectral/vocoder character; envelope matching may
+   only partially help -> consider documenting residual as a known limitation.
+============================================================

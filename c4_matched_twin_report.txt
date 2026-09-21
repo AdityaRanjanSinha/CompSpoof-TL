@@ -1,0 +1,9 @@
+============================================================
+C4 MATCHED-TWIN SPLICE PROBE (GNG-2 gate)
+spoof vs matched-bonafide-twin, LOCAL boundary features only
+============================================================
+pairs                 : 1200
+probe accuracy        : 0.341   (chance 0.500, margin -0.159)
+
+VERDICT: PASS — boundary/artifact features do NOT separate spoof from matched twin (near chance). Splices are honest; benchmark cannot be gamed via edits. SAFE TO GENERATE THE FULL BENCHMARK.
+============================================================
