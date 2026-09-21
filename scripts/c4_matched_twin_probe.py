@@ -77,7 +77,13 @@ def main():
     man["cid"] = man["clip_id"].astype(str)
 
     # pair spoof clips with their c1 twins by the numeric prefix (000006_... <-> 000006_c1twin_...)
-    def prefix(cid): return cid.split("_")[0]
+    def prefix(cid):
+        parts = cid.split("_")
+        # find the first all-digit part (the numeric clip id), robust to a split prefix
+        for p in parts:
+            if p.isdigit():
+                return p
+        return parts[0]
     twins = {prefix(c): c for c in man["cid"] if "c1twin" in c}
     spoofs = {prefix(c): c for c in man["cid"]
               if "c1twin" not in c and man.loc[man.cid == c, "label"].iloc[0] != "bonafide_bonafide"}
