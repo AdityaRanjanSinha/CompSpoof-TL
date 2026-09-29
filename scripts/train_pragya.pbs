@@ -1,0 +1,25 @@
+#!/bin/bash
+# Full CompSpoof-TL training run on PARAM Pragya (1 x A100).
+# Submit from the repo root:   qsub -v SEED=42 scripts/train_pragya.pbs
+# Walltime ran out? Submit the same command again: training resumes from last.pt.
+#PBS -N cstl_train
+#PBS -P maggarwal_care.spons
+#PBS -q standard
+#PBS -l select=1:ncpus=8:ngpus=1
+#PBS -l walltime=24:00:00
+#PBS -j oe
+
+SEED=${SEED:-42}
+OUT=/flash/ee/btech/ee1230446/runs/dual_branch_seed${SEED}
+mkdir -p "$OUT"
+cd "$PBS_O_WORKDIR" || exit 1
+
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate compspoof-tl
+export PYTHONPATH=.
+export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1     # compute nodes have no internet
+
+echo "job $PBS_JOBID on $(hostname) | seed $SEED | $(date)" >> "$OUT/train.log"
+nvidia-smi --query-gpu=name,memory.total --format=csv >> "$OUT/train.log"
+python scripts/train.py --seed "$SEED" --out_dir "$OUT" --num_workers 6 ${EXTRA_ARGS} >> "$OUT/train.log" 2>&1
+echo "exit $? | $(date)" >> "$OUT/train.log"

@@ -29,6 +29,8 @@ cross-checked against the authors' reference implementation
 from typing import List, Tuple
 import numpy as np
 
+from .frame_metrics import weighted_eer_sweep
+
 Range = Tuple[float, float, float]   # (start_sec, end_sec, value)  value = label or score
 
 
@@ -95,7 +97,20 @@ def range_eer(ref_ranges: List[List[Range]],
     Range-based EER over all clips. Returns (eer, threshold_at_eer).
     ref_ranges[k] : list of (start, end, label)  for clip k  (label: 1 spoof, 0 bonafide)
     hyp_ranges[k] : list of (start, end, score)   for clip k  (score: higher = more spoof)
+    Same equations as the loop version; the threshold sweep is vectorised.
     """
+    hyp_records, D_P, D_N = _accumulate(ref_ranges, hyp_ranges)
+    if D_P == 0 or D_N == 0:
+        return 0.5, 0.5          # only one reference class present -> undefined
+    if not hyp_records:
+        return 0.5, 0.5
+    rec = np.asarray(hyp_records, dtype=np.float64)
+    return weighted_eer_sweep(rec[:, 0], rec[:, 1], rec[:, 2], D_P, D_N)
+
+
+def _range_eer_reference(ref_ranges: List[List[Range]],
+                         hyp_ranges: List[List[Range]]) -> Tuple[float, float]:
+    """Original O(N^2) loop, kept only to test the fast version against."""
     hyp_records, D_P, D_N = _accumulate(ref_ranges, hyp_ranges)
     if D_P == 0 or D_N == 0:
         return 0.5, 0.5          # only one reference class present -> undefined

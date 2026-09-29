@@ -23,6 +23,35 @@ import numpy as np
 # --------------------------------------------------------------------------- #
 # Equal Error Rate
 # --------------------------------------------------------------------------- #
+def weighted_eer_sweep(scores, w_pos, w_neg, tot_pos=None, tot_neg=None):
+    """
+    Vectorised threshold sweep shared by frame EER and range EER.
+    Each item has a score and a positive (spoof) weight and a negative (bonafide) weight.
+    Predict spoof iff score >= t.  FAR(t) = neg weight with score >= t / tot_neg,
+    FRR(t) = pos weight with score < t / tot_pos.  Candidates: below-min, every distinct
+    score, above-max (ascending); the first minimiser of |FAR-FRR| wins (same tie rule as
+    the original loop).  O(N log N) instead of O(N^2).
+    """
+    scores = np.asarray(scores, dtype=np.float64).ravel()
+    w_pos = np.asarray(w_pos, dtype=np.float64).ravel()
+    w_neg = np.asarray(w_neg, dtype=np.float64).ravel()
+    tot_pos = w_pos.sum() if tot_pos is None else float(tot_pos)
+    tot_neg = w_neg.sum() if tot_neg is None else float(tot_neg)
+    uniq, inv = np.unique(scores, return_inverse=True)
+    pw = np.bincount(inv, weights=w_pos, minlength=len(uniq))
+    nw = np.bincount(inv, weights=w_neg, minlength=len(uniq))
+    cpw = np.concatenate([[0.0], np.cumsum(pw)])   # pos weight with score < uniq[k]  (k=0..U)
+    cnw = np.concatenate([[0.0], np.cumsum(nw)])
+    # thresholds: [min-1] -> k=0 ; uniq[k] -> k ; [max+1] -> k=U
+    fn = np.concatenate([[0.0], cpw[:-1], [cpw[-1]]])
+    fp = np.concatenate([[cnw[-1]], cnw[-1] - cnw[:-1], [0.0]])
+    thr = np.concatenate([[uniq[0] - 1], uniq, [uniq[-1] + 1]])
+    far = fp / tot_neg if tot_neg > 0 else np.zeros_like(fp)
+    frr = fn / tot_pos if tot_pos > 0 else np.zeros_like(fn)
+    k = int(np.argmin(np.abs(far - frr)))
+    return float((far[k] + frr[k]) / 2.0), float(thr[k])
+
+
 def eer(scores: np.ndarray, labels: np.ndarray) -> Tuple[float, float]:
     """
     Equal Error Rate: sweep the threshold; EER is where the false-acceptance rate
@@ -31,6 +60,15 @@ def eer(scores: np.ndarray, labels: np.ndarray) -> Tuple[float, float]:
 
     Degenerate cases (only one class present) return eer = 0.5 (undefined -> chance).
     """
+    scores = np.asarray(scores, dtype=np.float64).ravel()
+    labels = np.asarray(labels).ravel().astype(int)
+    if (labels == 1).sum() == 0 or (labels == 0).sum() == 0:
+        return 0.5, 0.5
+    return weighted_eer_sweep(scores, labels == 1, labels == 0)
+
+
+def _eer_reference(scores: np.ndarray, labels: np.ndarray) -> Tuple[float, float]:
+    """Original O(N^2) loop, kept only to test the fast version against."""
     scores = np.asarray(scores, dtype=np.float64).ravel()
     labels = np.asarray(labels).ravel().astype(int)
     pos = scores[labels == 1]           # spoof scores
