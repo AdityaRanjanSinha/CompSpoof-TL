@@ -5,7 +5,7 @@
 #PBS -N cstl_train
 #PBS -P maggarwal_care.spons
 #PBS -q standard
-#PBS -l select=1:ncpus=8:ngpus=1
+#PBS -l select=1:ncpus=16:ngpus=1
 #PBS -l walltime=24:00:00
 #PBS -j oe
 
@@ -21,5 +21,5 @@ export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1     # compute nodes have no inter
 
 echo "job $PBS_JOBID on $(hostname) | seed $SEED | $(date)" >> "$OUT/train.log"
 nvidia-smi --query-gpu=name,memory.total --format=csv >> "$OUT/train.log"
-python scripts/train.py --seed "$SEED" --out_dir "$OUT" --num_workers 6 ${EXTRA_ARGS} >> "$OUT/train.log" 2>&1
+python scripts/train.py --seed "$SEED" --out_dir "$OUT" --num_workers 12 ${EXTRA_ARGS} >> "$OUT/train.log" 2>&1
 echo "exit $? | $(date)" >> "$OUT/train.log"

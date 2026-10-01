@@ -1,0 +1,17 @@
+#!/bin/bash
+#PBS -N cstl_smoke
+#PBS -P maggarwal_care.spons
+#PBS -q standard
+#PBS -l select=1:ncpus=16:ngpus=1
+#PBS -l walltime=01:00:00
+#PBS -j oe
+OUT=/flash/ee/btech/ee1230446/runs/smoke
+mkdir -p $OUT
+cd $PBS_O_WORKDIR
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate compspoof-tl
+export PYTHONPATH=. HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+nvidia-smi --query-gpu=name,memory.total --format=csv > $OUT/smoke.log
+python scripts/train.py --limit_train 512 --limit_val 256 --limit_eval 256 --epochs 1 \
+  --out_dir $OUT --no_strict_seed --log_every 8 --num_workers 12 >> $OUT/smoke.log 2>&1
+echo "exit $?" >> $OUT/smoke.log

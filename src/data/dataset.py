@@ -32,7 +32,7 @@ def _fix_length(x: np.ndarray, n: int) -> np.ndarray:
 class CompSpoofTLDataset(Dataset):
     def __init__(self, root: str, split: str, limit: Optional[int] = None, seed: int = 0):
         self.dir = Path(root) / split
-        df = pd.read_csv(self.dir / "manifest.csv", dtype={"clip_id": str})
+        df = pd.read_csv(self.dir / "manifest.csv", dtype={"clip_id": str}, low_memory=False)
         if limit is not None and limit < len(df):
             df = df.sample(n=limit, random_state=seed).reset_index(drop=True)
         self.df = df
