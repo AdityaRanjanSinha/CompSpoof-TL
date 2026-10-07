@@ -1,0 +1,25 @@
+#!/bin/bash
+# Control C4 / Hypothesis H3 shortcut probe on the full benchmark.
+# Same dual-branch model, trained ONLY on C1 all-bonafide splices with the splice regions as
+# labels (it never sees spoofed audio or spoof labels), then scored on spoof localization on
+# val and eval. Near-chance spoof EER (~0.5) = splice artifacts alone do not solve the benchmark.
+# Submit from the repo root:   qsub scripts/c4_probe_pragya.pbs
+#PBS -N cstl_c4probe
+#PBS -P maggarwal_care.spons
+#PBS -q standard
+#PBS -l select=1:ncpus=16:ngpus=1
+#PBS -l walltime=12:00:00
+#PBS -j oe
+
+SEED=${SEED:-42}
+OUT=/flash/ee/btech/ee1230446/runs/c4_probe_seed${SEED}
+mkdir -p "$OUT"
+cd "$PBS_O_WORKDIR" || exit 1
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate compspoof-tl
+export PYTHONPATH=. HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+
+echo "job $PBS_JOBID on $(hostname) | seed $SEED | $(date)" >> "$OUT/train.log"
+python scripts/train.py --seed "$SEED" --out_dir "$OUT" --num_workers 12 \
+  --train_subset c1 --label_mode regions --epochs 15 >> "$OUT/train.log" 2>&1
+echo "exit $? | $(date)" >> "$OUT/train.log"

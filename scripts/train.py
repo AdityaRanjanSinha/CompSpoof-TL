@@ -53,6 +53,10 @@ def get_args():
     a.add_argument("--limit_train", type=int, default=None)
     a.add_argument("--limit_val", type=int, default=None)
     a.add_argument("--limit_eval", type=int, default=None)
+    a.add_argument("--train_subset", default="all", choices=["all", "c1"],
+                   help="c1 = train/select only on C1 all-bonafide splices (C4 shortcut probe)")
+    a.add_argument("--label_mode", default="mask", choices=["mask", "regions"],
+                   help="regions = splice regions from the manifest as labels (C4 probe)")
     a.add_argument("--eval_only", action="store_true")
     a.add_argument("--skip_final_eval", action="store_true")
     a.add_argument("--log_every", type=int, default=200)
@@ -122,11 +126,15 @@ def main():
     n_train = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"trainable params: {n_train/1e6:.2f} M", flush=True)
 
-    val_ds = CompSpoofTLDataset(args.data_root, "val", args.limit_val, args.seed)
+    # model selection uses the same kind of data/labels as training (for the C4 probe: held-out
+    # bonafide splices with splice labels -- the probe never sees spoof labels)
+    val_ds = CompSpoofTLDataset(args.data_root, "val", args.limit_val, args.seed,
+                                subset=args.train_subset, label_mode=args.label_mode)
     val_loader = make_loader(val_ds, args, shuffle=False)
 
     if not args.eval_only:
-        train_ds = CompSpoofTLDataset(args.data_root, "train", args.limit_train, args.seed)
+        train_ds = CompSpoofTLDataset(args.data_root, "train", args.limit_train, args.seed,
+                                      subset=args.train_subset, label_mode=args.label_mode)
         pw_sp, pw_en = train_ds.pos_weights(seed=args.seed)
         pw_sp, pw_en = float(np.clip(pw_sp, 1, 20)), float(np.clip(pw_en, 1, 20))
         print(f"train {len(train_ds)} | val {len(val_ds)} | pos_weight speech {pw_sp:.2f} env {pw_en:.2f}", flush=True)
@@ -185,6 +193,13 @@ def main():
     ck = torch.load(out_dir / "best.pt", map_location=device, weights_only=False)
     model.load_trainable_state_dict(ck["model"])
     print(f"final evaluation with best.pt (epoch {ck['epoch']})", flush=True)
+    if args.train_subset != "all" or args.label_mode != "mask":
+        e_sp, e_en = quick_val(predict(model, val_loader, device))
+        with open(out_dir / "results_probe_task.json", "w") as f:
+            json.dump({"what": "probe on its own task (val, same subset/labels as training)",
+                       "eer_speech": e_sp, "eer_env": e_en, "n": len(val_ds)}, f, indent=2)
+        print(f"[probe task, val {args.train_subset}/{args.label_mode}] EER speech {e_sp:.4f} env {e_en:.4f}",
+              flush=True)
     for split, limit in [("val", args.limit_val), ("eval", args.limit_eval)]:
         ds = CompSpoofTLDataset(args.data_root, split, limit, args.seed)
         res = full_eval(predict(model, make_loader(ds, args, shuffle=False), device), ds.df, out_dir, split)

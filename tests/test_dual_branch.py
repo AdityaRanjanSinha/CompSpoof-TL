@@ -39,3 +39,11 @@ def test_trainable_checkpoint_roundtrip():
     assert not any(".model." in k for k in sd)
     b.load_trainable_state_dict(sd)
     assert torch.equal(a.sp_head.weight, b.sp_head.weight)
+
+
+def test_regions_to_mask_formats():
+    from src.data.dataset import regions_to_mask
+    for cell in ["[(0.4, 1.2)]", "0.40-1.20", "[[20, 60]]", "[(400, 1200)]"]:
+        m = regions_to_mask(cell)
+        assert m.sum() == 40 and m[20] == 1 and m[59] == 1 and m[60] == 0
+    assert regions_to_mask("").sum() == 0 and regions_to_mask(float("nan")).sum() == 0
