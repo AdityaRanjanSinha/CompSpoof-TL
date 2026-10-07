@@ -1,1 +1,2 @@
 timestamp,run_id,git_commit,seed,model,dataset,hardware,wall_time,f1,eer_orig,eer_sp,eer_env,notes
+2026-10-07T19:36:42,dual_branch_v1_seed42,18fcb75,42,dual_branch_v1,compspoof-tl_eval,1x A100 80GB (Pragya),4h30m,0.679,,0.179,0.219,"frame EER@20ms, eval split (eval_source+test_source), pooled. seen/unseen: sp 0.082/0.307, env 0.204/0.315. config: runs/dual_branch_seed42/args.json"
