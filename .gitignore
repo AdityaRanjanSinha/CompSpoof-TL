@@ -30,3 +30,4 @@ conda-meta/
 .idea/
 .vscode/
 *.swp
+*.o[0-9]*
