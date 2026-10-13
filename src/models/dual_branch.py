@@ -34,30 +34,52 @@ class Branch(nn.Module):
 
 
 class DualBranchTL(nn.Module):
-    def __init__(self, speech_encoder: nn.Module, env_encoder: nn.Module, n_frames: int = 200,
+    """
+    mode:
+      "full"         both branches + bidirectional cross-attention (the main model)
+      "no_xattn"     both branches, cross-attention removed (ablation)
+      "speech_only"  XLS-R branch only; both components predicted from it (ablation)
+      "env_only"     BEATs branch only; both components predicted from it (ablation)
+    In "full" the module names are unchanged, so earlier checkpoints still load.
+    """
+    MODES = ("full", "no_xattn", "speech_only", "env_only")
+
+    def __init__(self, speech_encoder, env_encoder, n_frames: int = 200,
                  d_model: int = 256, gru_hidden: int = 256, gru_layers: int = 2,
-                 heads: int = 4, dropout: float = 0.1):
+                 heads: int = 4, dropout: float = 0.1, mode: str = "full"):
         super().__init__()
-        self.speech_encoder = speech_encoder
-        self.env_encoder = env_encoder
+        assert mode in self.MODES, mode
+        self.mode = mode
+        self.speech_encoder = speech_encoder if mode != "env_only" else None
+        self.env_encoder = env_encoder if mode != "speech_only" else None
         self.n_frames = n_frames
         h = 2 * gru_hidden
-        self.sp = Branch(speech_encoder.out_dim, d_model, gru_hidden, gru_layers, dropout)
-        self.en = Branch(env_encoder.out_dim, d_model, gru_hidden, gru_layers, dropout)
-        self.sp_xattn = nn.MultiheadAttention(h, heads, dropout=dropout, batch_first=True)
-        self.en_xattn = nn.MultiheadAttention(h, heads, dropout=dropout, batch_first=True)
-        self.sp_norm = nn.LayerNorm(h)
-        self.en_norm = nn.LayerNorm(h)
+        if self.speech_encoder is not None:
+            self.sp = Branch(self.speech_encoder.out_dim, d_model, gru_hidden, gru_layers, dropout)
+        if self.env_encoder is not None:
+            self.en = Branch(self.env_encoder.out_dim, d_model, gru_hidden, gru_layers, dropout)
+        if mode == "full":
+            self.sp_xattn = nn.MultiheadAttention(h, heads, dropout=dropout, batch_first=True)
+            self.en_xattn = nn.MultiheadAttention(h, heads, dropout=dropout, batch_first=True)
+            self.sp_norm = nn.LayerNorm(h)
+            self.en_norm = nn.LayerNorm(h)
         self.sp_head = nn.Linear(h, 1)
         self.en_head = nn.Linear(h, 1)
 
     def forward(self, wav: torch.Tensor):
-        sp = resample_time(self.speech_encoder(wav), self.n_frames)
-        en = resample_time(self.env_encoder(wav), self.n_frames)
-        sp, en = self.sp(sp), self.en(en)
-        sp2 = self.sp_norm(sp + self.sp_xattn(sp, en, en, need_weights=False)[0])
-        en2 = self.en_norm(en + self.en_xattn(en, sp, sp, need_weights=False)[0])
-        return self.sp_head(sp2).squeeze(-1), self.en_head(en2).squeeze(-1)
+        if self.mode == "speech_only":
+            f = self.sp(resample_time(self.speech_encoder(wav), self.n_frames))
+            return self.sp_head(f).squeeze(-1), self.en_head(f).squeeze(-1)
+        if self.mode == "env_only":
+            f = self.en(resample_time(self.env_encoder(wav), self.n_frames))
+            return self.sp_head(f).squeeze(-1), self.en_head(f).squeeze(-1)
+        sp = self.sp(resample_time(self.speech_encoder(wav), self.n_frames))
+        en = self.en(resample_time(self.env_encoder(wav), self.n_frames))
+        if self.mode == "full":
+            sp2 = self.sp_norm(sp + self.sp_xattn(sp, en, en, need_weights=False)[0])
+            en2 = self.en_norm(en + self.en_xattn(en, sp, sp, need_weights=False)[0])
+            sp, en = sp2, en2
+        return self.sp_head(sp).squeeze(-1), self.en_head(en).squeeze(-1)
 
     # --- checkpoints hold only the trainable part (encoders are loaded from disk) ---
     def trainable_state_dict(self):

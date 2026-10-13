@@ -10,7 +10,7 @@
 #PBS -j oe
 
 SEED=${SEED:-42}
-OUT=/flash/ee/btech/ee1230446/runs/dual_branch_seed${SEED}
+OUT=/flash/ee/btech/ee1230446/runs/${RUN_NAME:-dual_branch}_seed${SEED}
 mkdir -p "$OUT"
 cd "$PBS_O_WORKDIR" || exit 1
 
@@ -21,5 +21,5 @@ export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1     # compute nodes have no inter
 
 echo "job $PBS_JOBID on $(hostname) | seed $SEED | $(date)" >> "$OUT/train.log"
 nvidia-smi --query-gpu=name,memory.total --format=csv >> "$OUT/train.log"
-python scripts/train.py --seed "$SEED" --out_dir "$OUT" --num_workers 12 ${EXTRA_ARGS} >> "$OUT/train.log" 2>&1
+python scripts/train.py --seed "$SEED" --out_dir "$OUT" --num_workers 12 ${ABLATION:+--ablation $ABLATION} ${EXTRA_ARGS} >> "$OUT/train.log" 2>&1
 echo "exit $? | $(date)" >> "$OUT/train.log"

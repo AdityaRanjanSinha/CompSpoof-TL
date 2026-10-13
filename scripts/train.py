@@ -57,6 +57,8 @@ def get_args():
                    help="c1 = train/select only on C1 all-bonafide splices (C4 shortcut probe)")
     a.add_argument("--label_mode", default="mask", choices=["mask", "regions"],
                    help="regions = splice regions from the manifest as labels (C4 probe)")
+    a.add_argument("--ablation", default="full", choices=["full", "no_xattn", "speech_only", "env_only"],
+                   help="model variant (week-11 ablations); 'full' = main model")
     a.add_argument("--eval_only", action="store_true")
     a.add_argument("--skip_final_eval", action="store_true")
     a.add_argument("--log_every", type=int, default=200)
@@ -122,7 +124,10 @@ def main():
         json.dump(vars(args), f, indent=2)
 
     print("loading encoders ...", flush=True)
-    model = DualBranchTL(XLSREncoder(args.xlsr_dir), BEATsEncoder(args.beats_ckpt, args.beats_code)).to(device)
+    sp_enc = XLSREncoder(args.xlsr_dir) if args.ablation != "env_only" else None
+    en_enc = BEATsEncoder(args.beats_ckpt, args.beats_code) if args.ablation != "speech_only" else None
+    model = DualBranchTL(sp_enc, en_enc, mode=args.ablation).to(device)
+    print(f"model variant: {args.ablation}", flush=True)
     n_train = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"trainable params: {n_train/1e6:.2f} M", flush=True)
 
