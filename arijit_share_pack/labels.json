@@ -1,0 +1,114 @@
+{
+  "title": "Arijit Singh Partial Deepfake Evaluation & Sharing Pack",
+  "description": "Benchmark comparison of real vs. F5-TTS flow-matching neural inpainted speech.",
+  "model": "F5-TTS (Non-Autoregressive Flow Matching DiT with Vocos Vocoder)",
+  "infilling_technique": "Bidirectional Contextual Conditioning (Zero-shot Inpainting)",
+  "clips": [
+    {
+      "id": "1_real_4s_changemyvoice",
+      "filename": "audio/1_real_4s_changemyvoice.wav",
+      "display_name": "1. Real 4s Benchmark Clip ('change my voice')",
+      "duration_seconds": 4.0,
+      "sample_rate_hz": 16000,
+      "overall_label": "100% REAL (Bona Fide Ground Truth)",
+      "transcript": "So I had to change my voice to kind of cut through the...",
+      "intervals": [
+        {
+          "start_time": "0.00s",
+          "end_time": "4.00s",
+          "label": "REAL",
+          "color": "#10b981",
+          "text": "Full 4-second excerpt from original interview"
+        }
+      ]
+    },
+    {
+      "id": "2_f5_fake_4s_fakemyvoice",
+      "filename": "audio/2_f5_fake_4s_fakemyvoice.wav",
+      "display_name": "2. F5-TTS 4s Spoofed Clip ('fake my voice')",
+      "duration_seconds": 4.0,
+      "sample_rate_hz": 16000,
+      "overall_label": "PARTIALLY SPOOFED (25.0% Synthetic)",
+      "transcript": "So I had to [fake my voice] to kind of cut through the...",
+      "intervals": [
+        {
+          "start_time": "0.00s",
+          "end_time": "1.58s",
+          "duration": "1.58s",
+          "label": "REAL",
+          "color": "#10b981",
+          "text": "So I had to"
+        },
+        {
+          "start_time": "1.58s",
+          "end_time": "2.58s",
+          "duration": "1.00s",
+          "label": "FAKE (F5-TTS Inpainted)",
+          "color": "#ef4444",
+          "text": "fake my voice"
+        },
+        {
+          "start_time": "2.58s",
+          "end_time": "4.00s",
+          "duration": "1.42s",
+          "label": "REAL",
+          "color": "#10b981",
+          "text": "to kind of cut through the"
+        }
+      ]
+    },
+    {
+      "id": "3_real_full_arijit",
+      "filename": "audio/3_real_full_arijit.wav",
+      "display_name": "3. Real Full Monologue (31.15s)",
+      "duration_seconds": 31.15,
+      "sample_rate_hz": 24000,
+      "overall_label": "100% REAL (Full Authentic Interview)",
+      "transcript": "...and I have to think, no, I don't know how to lie to me, I don't know what I mean. Today I'm not going to talk about TVI... So I had to change my voice to kind of cut through the thought, the dialogue. But I'm going to make a worse case... Thank you guys. We will see you next time.",
+      "intervals": [
+        {
+          "start_time": "0.00s",
+          "end_time": "31.15s",
+          "label": "REAL",
+          "color": "#10b981",
+          "text": "Authentic interview monologue"
+        }
+      ]
+    },
+    {
+      "id": "4_tampered_full_arijit",
+      "filename": "audio/4_tampered_full_arijit.wav",
+      "display_name": "4. Full Monologue with Tampered F5-TTS Word (31.15s)",
+      "duration_seconds": 31.15,
+      "sample_rate_hz": 24000,
+      "overall_label": "PARTIALLY SPOOFED (3.2% Synthetic Word Spliced)",
+      "transcript": "...and I have to think, no, I don't know how to lie to me, I don't know what I mean. Today I'm not going to talk about TVI... So I had to [FAKE MY VOICE] to kind of cut through the thought, the dialogue. But I'm going to make a worse case... Thank you guys. We will see you next time.",
+      "intervals": [
+        {
+          "start_time": "0.00s",
+          "end_time": "11.58s",
+          "duration": "11.58s",
+          "label": "REAL",
+          "color": "#10b981",
+          "text": "Preceding interview context"
+        },
+        {
+          "start_time": "11.58s",
+          "end_time": "12.58s",
+          "duration": "1.00s",
+          "label": "FAKE (F5-TTS Inpainted)",
+          "color": "#ef4444",
+          "text": "fake my voice"
+        },
+        {
+          "start_time": "12.58s",
+          "end_time": "31.15s",
+          "duration": "18.57s",
+          "label": "REAL",
+          "color": "#10b981",
+          "text": "Remaining authentic interview"
+        }
+      ]
+    }
+  ]
+}

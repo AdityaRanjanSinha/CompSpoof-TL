@@ -1,0 +1,39 @@
+========================================================================
+ARIJIT SINGH PARTIAL DEEPFAKE BENCHMARK & LABELS GUIDE
+========================================================================
+
+Clip 1: 1_real_4s_changemyvoice.wav (4.0s @ 16kHz)
+------------------------------------------------------------------------
+• Label: 100% REAL (Bona Fide)
+• Text: "So I had to change my voice to kind of cut through the..."
+• Timestamps:
+  - 0.00s - 4.00s: REAL
+
+Clip 2: 2_f5_fake_4s_fakemyvoice.wav (4.0s @ 16kHz)
+------------------------------------------------------------------------
+• Label: PARTIALLY FAKE (25% Synthetic)
+• Text: "So I had to [fake my voice] to kind of cut through the..."
+• Timestamps:
+  - 0.00s - 1.58s: REAL ("So I had to")
+  - 1.58s - 2.58s: FAKE ("fake my voice" - F5-TTS Neural Inpainting)
+  - 2.58s - 4.00s: REAL ("to kind of cut through the")
+
+Clip 3: 3_real_full_arijit.wav (31.15s @ 24kHz)
+------------------------------------------------------------------------
+• Label: 100% REAL (Full Authentic Interview)
+• Text: Complete interview monologue
+• Timestamps:
+  - 0.00s - 31.15s: REAL
+
+Clip 4: 4_tampered_full_arijit.wav (31.15s @ 24kHz)
+------------------------------------------------------------------------
+• Label: PARTIALLY FAKE (3.2% Synthetic Word Injection)
+• Text: Complete interview monologue with 1 word tempered
+• Timestamps:
+  - 0.00s - 11.58s: REAL
+  - 11.58s - 12.58s: FAKE ("fake my voice" - F5-TTS Neural Inpainting)
+  - 12.58s - 31.15s: REAL
+
+========================================================================
+Visual Interactive Player: Double-click index.html in this folder!
+========================================================================

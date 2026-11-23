@@ -1,0 +1,603 @@
+[
+  {
+    "start": 0.0,
+    "end": 2.48,
+    "text": " ...and I have to think, no, I don't know how to lie to me, I don't know what I mean.",
+    "words": [
+      {
+        "word": " ...and",
+        "start": 0.0,
+        "end": 0.46
+      },
+      {
+        "word": " I",
+        "start": 0.46,
+        "end": 0.6
+      },
+      {
+        "word": " have",
+        "start": 0.6,
+        "end": 0.6
+      },
+      {
+        "word": " to",
+        "start": 0.6,
+        "end": 0.68
+      },
+      {
+        "word": " think,",
+        "start": 0.68,
+        "end": 0.68
+      },
+      {
+        "word": " no,",
+        "start": 0.68,
+        "end": 0.68
+      },
+      {
+        "word": " I",
+        "start": 0.82,
+        "end": 0.82
+      },
+      {
+        "word": " don't",
+        "start": 0.82,
+        "end": 0.82
+      },
+      {
+        "word": " know",
+        "start": 0.82,
+        "end": 0.82
+      },
+      {
+        "word": " how",
+        "start": 0.82,
+        "end": 1.44
+      },
+      {
+        "word": " to",
+        "start": 1.44,
+        "end": 1.44
+      },
+      {
+        "word": " lie",
+        "start": 1.44,
+        "end": 1.44
+      },
+      {
+        "word": " to",
+        "start": 1.44,
+        "end": 1.96
+      },
+      {
+        "word": " me,",
+        "start": 1.96,
+        "end": 1.96
+      },
+      {
+        "word": " I",
+        "start": 1.96,
+        "end": 1.96
+      },
+      {
+        "word": " don't",
+        "start": 1.96,
+        "end": 1.96
+      },
+      {
+        "word": " know",
+        "start": 1.96,
+        "end": 1.96
+      },
+      {
+        "word": " what",
+        "start": 1.96,
+        "end": 1.96
+      },
+      {
+        "word": " I",
+        "start": 1.96,
+        "end": 1.96
+      },
+      {
+        "word": " mean.",
+        "start": 1.96,
+        "end": 2.48
+      }
+    ]
+  },
+  {
+    "start": 3.78,
+    "end": 10.18,
+    "text": " Today I'm not going to talk about TVI, but I don't know I'm not going to talk about TVI.",
+    "words": [
+      {
+        "word": " Today",
+        "start": 3.78,
+        "end": 4.82
+      },
+      {
+        "word": " I'm",
+        "start": 4.82,
+        "end": 5.82
+      },
+      {
+        "word": " not",
+        "start": 5.82,
+        "end": 5.82
+      },
+      {
+        "word": " going",
+        "start": 5.82,
+        "end": 5.82
+      },
+      {
+        "word": " to",
+        "start": 5.82,
+        "end": 9.16
+      },
+      {
+        "word": " talk",
+        "start": 9.16,
+        "end": 9.16
+      },
+      {
+        "word": " about",
+        "start": 9.16,
+        "end": 9.16
+      },
+      {
+        "word": " TVI,",
+        "start": 9.16,
+        "end": 10.18
+      },
+      {
+        "word": " but",
+        "start": 10.18,
+        "end": 10.18
+      },
+      {
+        "word": " I",
+        "start": 10.18,
+        "end": 10.18
+      },
+      {
+        "word": " don't",
+        "start": 10.18,
+        "end": 10.18
+      },
+      {
+        "word": " know",
+        "start": 10.18,
+        "end": 10.18
+      },
+      {
+        "word": " I'm",
+        "start": 10.18,
+        "end": 10.18
+      },
+      {
+        "word": " not",
+        "start": 10.18,
+        "end": 10.18
+      },
+      {
+        "word": " going",
+        "start": 10.18,
+        "end": 10.18
+      },
+      {
+        "word": " to",
+        "start": 10.18,
+        "end": 10.18
+      },
+      {
+        "word": " talk",
+        "start": 10.18,
+        "end": 10.18
+      },
+      {
+        "word": " about",
+        "start": 10.18,
+        "end": 10.18
+      },
+      {
+        "word": " TVI.",
+        "start": 10.18,
+        "end": 10.18
+      }
+    ]
+  },
+  {
+    "start": 10.18,
+    "end": 16.84,
+    "text": " So I had to change my voice to kind of cut through the thought, the def dialogue.",
+    "words": [
+      {
+        "word": " So",
+        "start": 10.18,
+        "end": 10.18
+      },
+      {
+        "word": " I",
+        "start": 10.18,
+        "end": 10.56
+      },
+      {
+        "word": " had",
+        "start": 10.56,
+        "end": 11.46
+      },
+      {
+        "word": " to",
+        "start": 11.46,
+        "end": 11.58
+      },
+      {
+        "word": " change",
+        "start": 11.58,
+        "end": 11.8
+      },
+      {
+        "word": " my",
+        "start": 11.8,
+        "end": 12.04
+      },
+      {
+        "word": " voice",
+        "start": 12.04,
+        "end": 12.58
+      },
+      {
+        "word": " to",
+        "start": 12.58,
+        "end": 13.02
+      },
+      {
+        "word": " kind",
+        "start": 13.02,
+        "end": 13.2
+      },
+      {
+        "word": " of",
+        "start": 13.2,
+        "end": 13.54
+      },
+      {
+        "word": " cut",
+        "start": 13.54,
+        "end": 13.82
+      },
+      {
+        "word": " through",
+        "start": 13.82,
+        "end": 14.42
+      },
+      {
+        "word": " the",
+        "start": 14.42,
+        "end": 14.8
+      },
+      {
+        "word": " thought,",
+        "start": 14.8,
+        "end": 15.38
+      },
+      {
+        "word": " the",
+        "start": 16.24,
+        "end": 16.28
+      },
+      {
+        "word": " def",
+        "start": 16.28,
+        "end": 16.52
+      },
+      {
+        "word": " dialogue.",
+        "start": 16.52,
+        "end": 16.84
+      }
+    ]
+  },
+  {
+    "start": 17.72,
+    "end": 19.82,
+    "text": " But I'm going to make a worse case, still getting very serious, but I don't know how to say it, but...",
+    "words": [
+      {
+        "word": " But",
+        "start": 17.72,
+        "end": 18.56
+      },
+      {
+        "word": " I'm",
+        "start": 18.56,
+        "end": 18.56
+      },
+      {
+        "word": " going",
+        "start": 18.56,
+        "end": 18.56
+      },
+      {
+        "word": " to",
+        "start": 18.56,
+        "end": 18.56
+      },
+      {
+        "word": " make",
+        "start": 18.56,
+        "end": 18.56
+      },
+      {
+        "word": " a",
+        "start": 18.56,
+        "end": 18.56
+      },
+      {
+        "word": " worse",
+        "start": 18.56,
+        "end": 18.56
+      },
+      {
+        "word": " case,",
+        "start": 18.56,
+        "end": 18.56
+      },
+      {
+        "word": " still",
+        "start": 18.56,
+        "end": 18.56
+      },
+      {
+        "word": " getting",
+        "start": 18.56,
+        "end": 19.24
+      },
+      {
+        "word": " very",
+        "start": 19.24,
+        "end": 19.78
+      },
+      {
+        "word": " serious,",
+        "start": 19.78,
+        "end": 19.78
+      },
+      {
+        "word": " but",
+        "start": 19.78,
+        "end": 19.78
+      },
+      {
+        "word": " I",
+        "start": 19.78,
+        "end": 19.78
+      },
+      {
+        "word": " don't",
+        "start": 19.78,
+        "end": 19.78
+      },
+      {
+        "word": " know",
+        "start": 19.78,
+        "end": 19.78
+      },
+      {
+        "word": " how",
+        "start": 19.78,
+        "end": 19.78
+      },
+      {
+        "word": " to",
+        "start": 19.78,
+        "end": 19.78
+      },
+      {
+        "word": " say",
+        "start": 19.78,
+        "end": 19.78
+      },
+      {
+        "word": " it,",
+        "start": 19.78,
+        "end": 19.78
+      },
+      {
+        "word": " but...",
+        "start": 19.78,
+        "end": 19.82
+      }
+    ]
+  },
+  {
+    "start": 21.32,
+    "end": 23.8,
+    "text": " I want to be honest, because I want to get fair to make TVIjes.",
+    "words": [
+      {
+        "word": " I",
+        "start": 21.32,
+        "end": 22.36
+      },
+      {
+        "word": " want",
+        "start": 22.36,
+        "end": 23.38
+      },
+      {
+        "word": " to",
+        "start": 23.38,
+        "end": 23.38
+      },
+      {
+        "word": " be",
+        "start": 23.38,
+        "end": 23.38
+      },
+      {
+        "word": " honest,",
+        "start": 23.38,
+        "end": 23.38
+      },
+      {
+        "word": " because",
+        "start": 23.38,
+        "end": 23.38
+      },
+      {
+        "word": " I",
+        "start": 23.38,
+        "end": 23.38
+      },
+      {
+        "word": " want",
+        "start": 23.38,
+        "end": 23.38
+      },
+      {
+        "word": " to",
+        "start": 23.38,
+        "end": 23.38
+      },
+      {
+        "word": " get",
+        "start": 23.38,
+        "end": 23.38
+      },
+      {
+        "word": " fair",
+        "start": 23.38,
+        "end": 23.38
+      },
+      {
+        "word": " to",
+        "start": 23.38,
+        "end": 23.38
+      },
+      {
+        "word": " make",
+        "start": 23.38,
+        "end": 23.38
+      },
+      {
+        "word": " TVIjes.",
+        "start": 23.38,
+        "end": 23.8
+      }
+    ]
+  },
+  {
+    "start": 24.74,
+    "end": 26.24,
+    "text": " Thank you guys.",
+    "words": [
+      {
+        "word": " Thank",
+        "start": 24.74,
+        "end": 25.34
+      },
+      {
+        "word": " you",
+        "start": 25.34,
+        "end": 25.54
+      },
+      {
+        "word": " guys.",
+        "start": 25.54,
+        "end": 26.24
+      }
+    ]
+  },
+  {
+    "start": 27.28,
+    "end": 28.48,
+    "text": " We are going to go to the next video.",
+    "words": [
+      {
+        "word": " We",
+        "start": 27.28,
+        "end": 27.48
+      },
+      {
+        "word": " are",
+        "start": 27.48,
+        "end": 27.48
+      },
+      {
+        "word": " going",
+        "start": 27.48,
+        "end": 27.66
+      },
+      {
+        "word": " to",
+        "start": 27.66,
+        "end": 28.2
+      },
+      {
+        "word": " go",
+        "start": 28.2,
+        "end": 28.2
+      },
+      {
+        "word": " to",
+        "start": 28.2,
+        "end": 28.2
+      },
+      {
+        "word": " the",
+        "start": 28.2,
+        "end": 28.26
+      },
+      {
+        "word": " next",
+        "start": 28.26,
+        "end": 28.48
+      },
+      {
+        "word": " video.",
+        "start": 28.48,
+        "end": 28.48
+      }
+    ]
+  },
+  {
+    "start": 29.0,
+    "end": 30.14,
+    "text": " We will see you next time.",
+    "words": [
+      {
+        "word": " We",
+        "start": 29.0,
+        "end": 29.5
+      },
+      {
+        "word": " will",
+        "start": 29.5,
+        "end": 29.74
+      },
+      {
+        "word": " see",
+        "start": 29.74,
+        "end": 30.04
+      },
+      {
+        "word": " you",
+        "start": 30.04,
+        "end": 30.04
+      },
+      {
+        "word": " next",
+        "start": 30.04,
+        "end": 30.04
+      },
+      {
+        "word": " time.",
+        "start": 30.04,
+        "end": 30.14
+      }
+    ]
+  }
+]

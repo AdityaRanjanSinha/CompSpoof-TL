@@ -3,12 +3,22 @@ data/*
 !data/.gitkeep
 outputs/
 checkpoints/
-*.wav
 *.flac
 *.pt
 *.ckpt
 *.tar.gz
 *.tar.gz.part_*
+
+# Ignore intermediate experiment audios and working dirs
+arijit_partial_spoof/
+samples_audio/
+amgr_status_screenshot.png
+arijit_share_pack.zip
+
+# Allow clean demo and share pack audios
+!web_demo/audio/*.wav
+!web_demo/downloads/*.zip
+!arijit_share_pack/audio/*.wav
 
 # python
 __pycache__/

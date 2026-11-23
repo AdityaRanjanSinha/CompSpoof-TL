@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CompSpoof-TL | Scenario B Model Evaluation Inspector</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-hover: #0ea5e9;
+      --speech-color: #f43f5e;
+      --speech-bg: rgba(244, 63, 94, 0.2);
+      --env-color: #10b981;
+      --env-bg: rgba(16, 185, 129, 0.2);
+      --gt-color: #e2e8f0;
+      --bonafide-color: #3b82f6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+    
+    header { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    header h1 { font-size: 1.5rem; font-weight: 700; color: #fff; }
+    header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
+    
+    .layout { display: grid; grid-template-columns: 340px 1fr; gap: 24px; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    
+    /* Sidebar */
+    .sidebar { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 160px); overflow-y: auto; }
+    .sidebar h2 { font-size: 1.05rem; font-weight: 600; color: var(--text-main); border-bottom: 1px solid var(--card-border); padding-bottom: 8px; margin-bottom: 4px; }
+    .clip-item { background: #0f172a; border: 1px solid var(--card-border); border-radius: 8px; padding: 12px; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; gap: 6px; }
+    .clip-item:hover { border-color: var(--primary); transform: translateY(-1px); }
+    .clip-item.active { border-color: var(--primary); background: #132238; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3); }
+    .clip-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; width: fit-content; }
+    .badge-speech { background: rgba(244, 63, 94, 0.25); color: #fb7185; }
+    .badge-env { background: rgba(16, 185, 129, 0.25); color: #34d399; }
+    .badge-dual { background: rgba(168, 85, 247, 0.25); color: #c084fc; }
+    .clip-id { font-size: 0.85rem; font-weight: 600; color: #fff; word-break: break-all; }
+    .clip-meta { font-size: 0.78rem; color: var(--text-muted); display: flex; justify-content: space-between; }
+    
+    /* Main Panel */
+    .main-panel { display: flex; flex-direction: column; gap: 20px; }
+    
+    .panel-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; }
+    
+    .clip-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+    .clip-title h2 { font-size: 1.3rem; font-weight: 700; color: #fff; }
+    .clip-title span { font-size: 0.85rem; color: var(--text-muted); }
+    
+    .meta-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+    .meta-pill { background: #0f172a; border: 1px solid var(--card-border); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; color: var(--text-muted); }
+    .meta-pill strong { color: #fff; }
+    
+    /* Player controls */
+    .audio-player-container { display: flex; align-items: center; gap: 16px; background: #0f172a; padding: 12px 18px; border-radius: 8px; border: 1px solid var(--card-border); margin-bottom: 16px; }
+    audio { flex: 1; height: 36px; }
+    
+    /* Controls bar */
+    .controls-bar { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--card-border); margin-bottom: 16px; flex-wrap: wrap; gap: 16px; }
+    .slider-group { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 250px; }
+    .slider-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); white-space: nowrap; }
+    input[type=range] { flex: 1; accent-color: var(--primary); cursor: pointer; }
+    .thr-val { font-size: 0.95rem; font-weight: 700; color: var(--primary); width: 44px; text-align: right; }
+    
+    /* Visual Timeline Track */
+    .track-section { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .track-card { background: #0f172a; border: 1px solid var(--card-border); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 8px; position: relative; }
+    
+    .track-header { display: flex; justify-content: space-between; align-items: center; }
+    .track-title { font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .track-badge { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .badge-sp { background: var(--speech-color); }
+    .badge-ev { background: var(--env-color); }
+    
+    .track-stats { font-size: 0.82rem; color: var(--text-muted); display: flex; gap: 12px; }
+    .track-stats strong { color: #fff; }
+    
+    /* Canvas Container with Playhead */
+    .canvas-container { position: relative; width: 100%; height: 140px; }
+    canvas { width: 100%; height: 100%; border-radius: 4px; display: block; }
+    .playhead { position: absolute; top: 0; bottom: 0; width: 2px; background: #ef4444; pointer-events: none; left: 0%; transform: translateX(-50%); z-index: 10; display: block; box-shadow: 0 0 6px rgba(239, 68, 68, 0.8); }
+    
+    /* Horizontal Bar Legends */
+    .bar-row { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; }
+    .bar-label { width: 90px; color: var(--text-muted); text-align: right; flex-shrink: 0; }
+    .mask-bar { height: 14px; flex: 1; border-radius: 3px; display: flex; overflow: hidden; background: #1e293b; border: 1px solid #334155; }
+    .mask-segment { height: 100%; }
+    
+    .legend-row { display: flex; gap: 16px; font-size: 0.78rem; color: var(--text-muted); margin-top: 8px; justify-content: flex-end; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-swatch { width: 12px; height: 12px; border-radius: 2px; }
+    
+    .axis-timeline { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); padding-left: 98px; margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>CompSpoof-TL: Scenario B Model Inspector</h1>
+      <p>Ground Truth Localization vs. Dual-Branch Model Predictions on Top 50% Partially Spoofed Audio</p>
+    </div>
+    <div class="meta-pills">
+      <div class="meta-pill">Frame Resolution: <strong>20 ms (200 frames / 4.0s)</strong></div>
+      <div class="meta-pill">Dual Encoders: <strong>XLS-R 300M & BEATs</strong></div>
+      <div class="meta-pill">Split: <strong>Eval Set (Scenario B)</strong></div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>Scenario B Samples (N=8)</h2>
+      <div id="clipList"></div>
+    </div>
+
+    <!-- Main Panel -->
+    <div class="main-panel">
+      <div class="panel-card">
+        
+        <div class="clip-header">
+          <div class="clip-title">
+            <h2 id="curTitle">Loading...</h2>
+            <span id="curId"></span>
+          </div>
+          <div class="meta-pills" id="curPills"></div>
+        </div>
+
+        <!-- Audio Player -->
+        <div class="audio-player-container">
+          <audio id="audioPlayer" controls></audio>
+        </div>
+
+        <!-- Interactive Threshold Controls -->
+        <div class="controls-bar">
+          <div class="slider-group">
+            <label for="thrSlider">Decision Threshold (&tau;):</label>
+            <input type="range" id="thrSlider" min="0.01" max="0.99" step="0.01" value="0.54">
+            <span class="thr-val" id="thrDisplay">0.54</span>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">
+            Optimal Scenario B Threshold: <strong style="color: var(--primary);">0.54</strong> (Speech & Env)
+          </div>
+        </div>
+
+        <!-- Timeline Tracks -->
+        <div class="track-section">
+          
+          <!-- SPEECH TRACK -->
+          <div class="track-card">
+            <div class="track-header">
+              <div class="track-title">
+                <span class="track-badge badge-sp"></span>
+                <span>Speech Component Localization (XLS-R Branch)</span>
+              </div>
+              <div class="track-stats" id="speechStats">
+                <span>F1: <strong>-</strong></span>
+                <span>Precision: <strong>-</strong></span>
+                <span>Recall: <strong>-</strong></span>
+              </div>
+            </div>
+
+            <!-- Ground Truth Bar -->
+            <div class="bar-row">
+              <span class="bar-label">Ground Truth</span>
+              <div class="mask-bar" id="speechGtBar"></div>
+            </div>
+
+            <!-- Model Probability Canvas -->
+            <div class="bar-row">
+              <span class="bar-label">Model P(Spoof)</span>
+              <div class="canvas-container">
+                <canvas id="speechCanvas" width="800" height="120"></canvas>
+                <div class="playhead" id="speechPlayhead"></div>
+              </div>
+            </div>
+
+            <!-- Predicted Binary Bar -->
+            <div class="bar-row">
+              <span class="bar-label">Prediction (&ge;&tau;)</span>
+              <div class="mask-bar" id="speechPredBar"></div>
+            </div>
+
+            <div class="axis-timeline">
+              <span>0.0s (Frame 0)</span>
+              <span>1.0s (Frame 50)</span>
+              <span>2.0s (Frame 100)</span>
+              <span>3.0s (Frame 150)</span>
+              <span>4.0s (Frame 200)</span>
+            </div>
+          </div>
+
+          <!-- ENVIRONMENT TRACK -->
+          <div class="track-card">
+            <div class="track-header">
+              <div class="track-title">
+                <span class="track-badge badge-ev"></span>
+                <span>Environment Component Localization (BEATs Branch)</span>
+              </div>
+              <div class="track-stats" id="envStats">
+                <span>F1: <strong>-</strong></span>
+                <span>Precision: <strong>-</strong></span>
+                <span>Recall: <strong>-</strong></span>
+              </div>
+            </div>
+
+            <!-- Ground Truth Bar -->
+            <div class="bar-row">
+              <span class="bar-label">Ground Truth</span>
+              <div class="mask-bar" id="envGtBar"></div>
+            </div>
+
+            <!-- Model Probability Canvas -->
+            <div class="bar-row">
+              <span class="bar-label">Model P(Spoof)</span>
+              <div class="canvas-container">
+                <canvas id="envCanvas" width="800" height="120"></canvas>
+                <div class="playhead" id="envPlayhead"></div>
+              </div>
+            </div>
+
+            <!-- Predicted Binary Bar -->
+            <div class="bar-row">
+              <span class="bar-label">Prediction (&ge;&tau;)</span>
+              <div class="mask-bar" id="envPredBar"></div>
+            </div>
+
+            <div class="axis-timeline">
+              <span>0.0s (Frame 0)</span>
+              <span>1.0s (Frame 50)</span>
+              <span>2.0s (Frame 100)</span>
+              <span>3.0s (Frame 150)</span>
+              <span>4.0s (Frame 200)</span>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div class="legend-row">
+            <div class="legend-item"><div class="legend-swatch" style="background: #3b82f6;"></div> Bona Fide Frame (0)</div>
+            <div class="legend-item"><div class="legend-swatch" style="background: #f43f5e;"></div> Speech Spoofed Frame (1)</div>
+            <div class="legend-item"><div class="legend-swatch" style="background: #10b981;"></div> Env Spoofed Frame (1)</div>
+            <div class="legend-item"><div class="legend-swatch" style="background: #ef4444; height: 2px;"></div> Audio Playhead Cursor</div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let samples = [];
+    let currentIndex = 0;
+    let threshold = 0.54;
+
+    const audioPlayer = document.getElementById('audioPlayer');
+    const thrSlider = document.getElementById('thrSlider');
+    const thrDisplay = document.getElementById('thrDisplay');
+    const clipListEl = document.getElementById('clipList');
+
+    const curTitle = document.getElementById('curTitle');
+    const curId = document.getElementById('curId');
+    const curPills = document.getElementById('curPills');
+
+    const speechStats = document.getElementById('speechStats');
+    const speechGtBar = document.getElementById('speechGtBar');
+    const speechPredBar = document.getElementById('speechPredBar');
+    const speechCanvas = document.getElementById('speechCanvas');
+    const speechPlayhead = document.getElementById('speechPlayhead');
+
+    const envStats = document.getElementById('envStats');
+    const envGtBar = document.getElementById('envGtBar');
+    const envPredBar = document.getElementById('envPredBar');
+    const envCanvas = document.getElementById('envCanvas');
+    const envPlayhead = document.getElementById('envPlayhead');
+
+    // Fetch samples
+    fetch('data.json')
+      .then(res => res.json())
+      .then(data => {
+        samples = data;
+        renderSidebar();
+        loadClip(0);
+      });
+
+    function getBadgeClass(cat) {
+      if (cat.includes('Speech')) return 'badge-speech';
+      if (cat.includes('Env')) return 'badge-env';
+      return 'badge-dual';
+    }
+
+    function renderSidebar() {
+      clipListEl.innerHTML = '';
+      samples.forEach((s, idx) => {
+        const item = document.createElement('div');
+        item.className = 'clip-item' + (idx === currentIndex ? ' active' : '');
+        item.onclick = () => loadClip(idx);
+
+        item.innerHTML = `
+          <span class="clip-badge ${getBadgeClass(s.category)}">${s.category}</span>
+          <span class="clip-id">${s.clip_id}</span>
+          <div class="clip-meta">
+            <span>Sp: ${s.speech_generator}</span>
+            <span>Env: ${s.env_generator}</span>
+          </div>
+        `;
+        clipListEl.appendChild(item);
+      });
+    }
+
+    function loadClip(idx) {
+      currentIndex = idx;
+      renderSidebar();
+      const s = samples[idx];
+
+      curTitle.textContent = s.category;
+      curId.textContent = s.clip_id;
+      
+      curPills.innerHTML = `
+        <div class="meta-pill">Speech Gen: <strong>${s.speech_generator}</strong></div>
+        <div class="meta-pill">Env Gen: <strong>${s.env_generator}</strong></div>
+        <div class="meta-pill">Unseen Gen: <strong>${s.unseen_generator ? 'YES' : 'NO'}</strong></div>
+        <div class="meta-pill">SNR: <strong>${s.snr_db !== null ? s.snr_db + ' dB' : 'N/A'}</strong></div>
+      `;
+
+      audioPlayer.src = `audio/${s.clip_id}.wav`;
+      audioPlayer.load();
+
+      updateVisuals();
+    }
+
+    function computeStats(preds, mask) {
+      let tp = 0, fp = 0, fn = 0, tn = 0;
+      for (let i = 0; i < mask.length; i++) {
+        if (preds[i] === 1 && mask[i] === 1) tp++;
+        else if (preds[i] === 1 && mask[i] === 0) fp++;
+        else if (preds[i] === 0 && mask[i] === 1) fn++;
+        else tn++;
+      }
+      const prec = tp + fp > 0 ? (tp / (tp + fp)) : 1.0;
+      const rec = tp + fn > 0 ? (tp / (tp + fn)) : 1.0;
+      const f1 = prec + rec > 0 ? (2 * prec * rec / (prec + rec)) : 0.0;
+      return { prec, rec, f1 };
+    }
+
+    function renderMaskBar(el, mask, activeColor) {
+      el.innerHTML = '';
+      let curVal = mask[0];
+      let runLen = 1;
+      
+      const addSegment = (val, len) => {
+        const seg = document.createElement('div');
+        seg.className = 'mask-segment';
+        seg.style.flex = len;
+        seg.style.background = val === 1 ? activeColor : '#1e293b';
+        el.appendChild(seg);
+      };
+
+      for (let i = 1; i < mask.length; i++) {
+        if (mask[i] === curVal) {
+          runLen++;
+        } else {
+          addSegment(curVal, runLen);
+          curVal = mask[i];
+          runLen = 1;
+        }
+      }
+      addSegment(curVal, runLen);
+    }
+
+    function drawCurve(canvas, scores, activeColor, thr) {
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Grid lines
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      for (let y = 0.25; y <= 0.75; y += 0.25) {
+        ctx.beginPath();
+        ctx.moveTo(0, h * (1 - y));
+        ctx.lineTo(w, h * (1 - y));
+        ctx.stroke();
+      }
+
+      // Threshold line
+      const thrY = h * (1 - thr);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(0, thrY);
+      ctx.lineTo(w, thrY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Fill area under curve
+      ctx.fillStyle = activeColor.replace('rgb', 'rgba').replace(')', ', 0.25)');
+      ctx.beginPath();
+      ctx.moveTo(0, h);
+      for (let i = 0; i < scores.length; i++) {
+        const x = (i / (scores.length - 1)) * w;
+        const y = h * (1 - scores[i]);
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(w, h);
+      ctx.closePath();
+      ctx.fill();
+
+      // Stroke curve
+      ctx.strokeStyle = activeColor;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let i = 0; i < scores.length; i++) {
+        const x = (i / (scores.length - 1)) * w;
+        const y = h * (1 - scores[i]);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    function updateVisuals() {
+      if (!samples.length) return;
+      const s = samples[currentIndex];
+
+      // Speech
+      const spPred = s.speech_scores.map(v => v >= threshold ? 1 : 0);
+      const spStats = computeStats(spPred, s.speech_mask);
+      speechStats.innerHTML = `
+        <span>F1: <strong>${(spStats.f1 * 100).toFixed(1)}%</strong></span>
+        <span>Precision: <strong>${(spStats.prec * 100).toFixed(1)}%</strong></span>
+        <span>Recall: <strong>${(spStats.rec * 100).toFixed(1)}%</strong></span>
+      `;
+      renderMaskBar(speechGtBar, s.speech_mask, '#f43f5e');
+      renderMaskBar(speechPredBar, spPred, '#f43f5e');
+      drawCurve(speechCanvas, s.speech_scores, '#f43f5e', threshold);
+
+      // Environment
+      const envPred = s.env_scores.map(v => v >= threshold ? 1 : 0);
+      const eStats = computeStats(envPred, s.env_mask);
+      envStats.innerHTML = `
+        <span>F1: <strong>${(eStats.f1 * 100).toFixed(1)}%</strong></span>
+        <span>Precision: <strong>${(eStats.prec * 100).toFixed(1)}%</strong></span>
+        <span>Recall: <strong>${(eStats.rec * 100).toFixed(1)}%</strong></span>
+      `;
+      renderMaskBar(envGtBar, s.env_mask, '#10b981');
+      renderMaskBar(envPredBar, envPred, '#10b981');
+      drawCurve(envCanvas, s.env_scores, '#10b981', threshold);
+    }
+
+    thrSlider.oninput = (e) => {
+      threshold = parseFloat(e.target.value);
+      thrDisplay.textContent = threshold.toFixed(2);
+      updateVisuals();
+    };
+
+    // Synchronize playhead with audio playback
+    audioPlayer.ontimeupdate = () => {
+      const dur = audioPlayer.duration || 4.0;
+      const cur = audioPlayer.currentTime;
+      const pct = Math.min(100, Math.max(0, (cur / dur) * 100));
+      speechPlayhead.style.left = `${pct}%`;
+      envPlayhead.style.left = `${pct}%`;
+    };
+
+  </script>
+</body>
+</html>
