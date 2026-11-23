@@ -49,7 +49,7 @@ def create_full_tampered(orig_wav_path, inpaint_wav_path, out_wav_path, target_s
     return tampered
 
 def main():
-    share_dir = "arijit_share_pack"
+    share_dir = os.path.dirname(os.path.abspath(__file__))
     audio_dir = os.path.join(share_dir, "audio")
     os.makedirs(audio_dir, exist_ok=True)
 

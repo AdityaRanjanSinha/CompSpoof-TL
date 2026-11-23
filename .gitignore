@@ -18,7 +18,8 @@ arijit_share_pack.zip
 # Allow clean demo and share pack audios
 !web_demo/audio/*.wav
 !web_demo/downloads/*.zip
-!arijit_share_pack/audio/*.wav
+!share_packs/arijit_f5_inpainting/audio/*.wav
+!share_packs/arijit_f5_inpainting/*.zip
 
 # python
 __pycache__/
